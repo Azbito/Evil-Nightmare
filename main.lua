@@ -14,9 +14,8 @@ function love.load()
   animations = {}
   animations.idle = anim8.newAnimation(grid("1-1", 1), 5)
   animations.jump = anim8.newAnimation(grid('2-2', 1), 2)
-  animations.walk = anim8.newAnimation(grid('1-5', 2), 0.1)
-  animations.run = anim8.newAnimation(grid('1-8', 2), 0.5)
-  animations.attack = anim8.newAnimation(grid('1-2', 4), 0.05)
+  animations.walk = anim8.newAnimation(grid('1-5', 2), 0.3)
+  animations.run = anim8.newAnimation(grid('1-8', 3), 0.2)
 
   wf = require 'libraries/windfield/windfield'
   world = wf.newWorld(0, 800, false)
@@ -77,31 +76,32 @@ function spawnJumpThroughPlatforms(x, y, width, height)
     local platformJT = world:newRectangleCollider(x, y, width, height, {collision_class = "PlatformJT"})
     platformJT:setType('static')
     platformJT:setCollisionClass('PlatformJT')
-
     player:setPreSolve(function(collider_1, collider_2, contact)        
-
-      px, py = collider_1:getPosition()            
-      pw, ph = 20, 40            
-      tx, ty = collider_2:getPosition() 
-      tw, th = 100, 20
-
-      if py + ph > ty - th/2 then contact:setEnabled(false)  end
       
+      local px, py = collider_1:getPosition()            
+      local pw = 20
+      local ph = 40
+      local tx, ty = collider_2:getPosition() 
+      local tw = 1
+      local th = 1
+      
+      if ph + py > ty - th / 2 then contact:setEnabled(false) end
       table.insert(platforms, platformJT) 
     end)
   end
 end
 
--- function love.keypressed(key)
---     if key == "up" or key == "w" then
---         player:applyLinearImpulse(0, -4000)
---         player.animation = animations.jump
---       end
---   end
-
+function love.keypressed(key)
+  if player.grounded then
+    if key == "up" or key == "w" then
+        player:applyLinearImpulse(0, -4000)
+        player.isJumping = true
+      end
+  end
+end
 
 function loadMap()
-  gameMap = sti('maps/level1.lua')
+  gameMap = sti('maps/level2.lua')
   
   for i, obj in ipairs(gameMap.layers["Platforms"].objects) do
       spawnPlatform(obj.x, obj.y, obj.width, obj.height)
@@ -111,4 +111,3 @@ function loadMap()
     spawnJumpThroughPlatforms(jtp.x, jtp.y, jtp.width, jtp.height)
   end
 end
-

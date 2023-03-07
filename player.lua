@@ -9,19 +9,24 @@ cooldown = 0
 
 function playerUpdate(dt)
   if player.body then
-    local colliders = world:queryRectangleArea(player:getX() - 20, player:getY() + 50, 40, 2, {'Platform', 'PlatformJT'})
-
-    if player.isJumping and #colliders > 0.5 then
-      player.isJumping = false
-    end
+    local colliders = world:queryRectangleArea(player:getX() - 20, player:getY() + 50, 40, 2, {'Platform'})
 
     if #colliders > 0 then
       player.grounded = true
+      player.animation = animations.idle
     else 
       player.grounded = false
+      player.animation = animations.jump
     end
 
-    player.isLinearJump = false
+    local collidersJTP = world:queryRectangleArea(player:getX() - 10, player:getY() + 50, 40, 2, {'PlatformJT'})
+
+    if #collidersJTP > 0 then
+      player.grounded = true
+      player.animation = animations.idle
+    end
+
+    player.isJumping = false  
     player.isWalking = false
     player.isRunning = false
     player.isAttacking = false
@@ -69,20 +74,19 @@ function playerUpdate(dt)
     -- if player.isRunning then
     --   player.animation = animations.run
     -- end
-    if player.isJumping then
-      player.animation = animations.jump
-    end
-
-    if player.isWalking --[[and player.isRunning == false]] then
-      player.animation = animations.walk
-    -- elseif not player.isWalking then 
-      -- player.animation = animations.jump
-    end
-    print(player.isJumping)
-
-    if not player.isJumping and not player.isWalking then 
+  if player.grounded then
     player.animation = animations.idle
+    if player.isWalking then
+    player.animation = animations.walk
     end
+    if player.isRunning then
+    player.animation = animations.run
+    end
+  else
+    player.animation = animations.jump
+  end
+
+
 
     -- if player.isAttacking == true then
     --   player.animation = animations.attack
@@ -94,17 +98,10 @@ function playerUpdate(dt)
     player:destroy()
   end
 
-  -- player.animation:update(dt)
+  player.animation:update(dt)
 end
 
 function playerDraw()
   local px, py = player:getPosition()
   player.animation:draw(sprites.playerSheet, px, py, nil, .1 * player.direction, .1, 575.5, 660)
-end
-
-function love.keypressed(key)
-  if key == "up" or key == "w" then
-      player:applyLinearImpulse(0, -4000)
-      player.isJumping = true
-    end
 end
