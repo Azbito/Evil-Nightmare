@@ -9,14 +9,18 @@ function love.load()
 
   sprites = {}
   sprites.playerSheet = love.graphics.newImage('sprites/playerSheet.png')
+  sprites.fireBall = love.graphics.newImage('sprites/fireBall.png')
+
   local grid = anim8.newGrid(1151, 1151, sprites.playerSheet:getWidth(), sprites.playerSheet:getHeight())
-  
+
   animations = {}
   animations.idle = anim8.newAnimation(grid("1-1", 1), 5)
   animations.jump = anim8.newAnimation(grid('2-2', 1), 2)
   animations.walk = anim8.newAnimation(grid('1-5', 2), 0.3)
   animations.run = anim8.newAnimation(grid('1-8', 3), 0.2)
 
+  fireBall = {}
+  
   wf = require 'libraries/windfield/windfield'
   world = wf.newWorld(0, 800, false)
   world:setQueryDebugDrawing(true)
@@ -26,8 +30,9 @@ function love.load()
   world:addCollisionClass('Danger')
 
   require('player')
+  require('enemy')
 
-
+  enemies = {}
 
   -- dangerZone = world:newRectangleCollider(0, 550, 800, 50, {collision_class = "Danger"})
   -- dangerZone:setType('static')
@@ -35,12 +40,15 @@ function love.load()
   platforms = {}
 
   loadMap()
+
+  spawnEnemy(50, 100)
 end
 ----------------------------------------------------------
 function love.update(dt)
   world:update(dt)
   gameMap:update(dt)
   playerUpdate(dt)
+  updateEnemies(dt)
 
   local px, py = player:getPosition()
   player.animation:update(dt)
@@ -86,7 +94,7 @@ function spawnJumpThroughPlatforms(x, y, width, height)
       local th = 1
       
       if ph + py > ty - th / 2 then contact:setEnabled(false) end
-      table.insert(platforms, platformJT) 
+      table.insert(platforms, platformJT)
     end)
   end
 end
@@ -100,6 +108,7 @@ function love.keypressed(key)
   end
 end
 
+
 function loadMap()
   gameMap = sti('maps/level2.lua')
   
@@ -111,3 +120,8 @@ function loadMap()
     spawnJumpThroughPlatforms(jtp.x, jtp.y, jtp.width, jtp.height)
   end
 end
+
+function distanceBetween(x1, y1, x2, y2)
+  return math.sqrt((x2 - x1)^2 + (y2-y1)^2)
+end
+

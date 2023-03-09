@@ -5,7 +5,6 @@ player.runningSpeed = 340
 player.animation = animations.idle
 player.direction = 1
 player.grounded = true
-cooldown = 0
 
 function playerUpdate(dt)
   if player.body then
@@ -33,7 +32,6 @@ function playerUpdate(dt)
     player.isMoving = false
 
     px, py = player:getPosition()
-    cooldown = math.max(cooldown - dt, 0)
 
     if love.keyboard.isDown('right') or love.keyboard.isDown('d') then
       player:setX(px + player.speed*dt)
@@ -70,10 +68,7 @@ function playerUpdate(dt)
       cooldown = 2
     end
   end
-  -- if player.grounded then
-    -- if player.isRunning then
-    --   player.animation = animations.run
-    -- end
+
   if player.grounded then
     player.animation = animations.idle
     if player.isWalking then
@@ -82,18 +77,13 @@ function playerUpdate(dt)
     if player.isRunning then
     player.animation = animations.run
     end
+    if player.isAttacking then
+    player.animation = animations.attack
+    end
   else
     player.animation = animations.jump
   end
 
-
-
-    -- if player.isAttacking == true then
-    --   player.animation = animations.attack
-    -- end 
-  -- elseif player.isJumping and not player.grounded then
-    -- player.animation = animations.jump
-  -- end
   if player:enter('Danger') then
     player:destroy()
   end
