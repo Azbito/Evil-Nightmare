@@ -18,8 +18,6 @@ function love.load()
   animations.jump = anim8.newAnimation(grid('2-2', 1), 2)
   animations.walk = anim8.newAnimation(grid('1-5', 2), 0.3)
   animations.run = anim8.newAnimation(grid('1-8', 3), 0.2)
-
-  fireBall = {}
   
   wf = require 'libraries/windfield/windfield'
   world = wf.newWorld(0, 800, false)
