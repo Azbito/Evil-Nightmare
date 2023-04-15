@@ -22,7 +22,7 @@ function updateEnemies(dt)
   end
 
   for i, enemy in ipairs(enemies) do
-    if love.keypressed('k') and distanceBetween(player.x, player.y, enemy.x, enemy.y) > 300 then
+    if player.isAttacking and distanceBetween(player.x, player.y, enemy.x, enemy.y) < 300 then
       enemy.dead = true
     end
   end
@@ -30,6 +30,7 @@ function updateEnemies(dt)
   for i, enemy in ipairs(enemies) do
     if enemy.dead == false then
       enemy.x, enemy.y = enemy:getX(), enemy:getY()
+      return;
     end
   end
 

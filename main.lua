@@ -105,8 +105,8 @@ function love.keypressed(key)
   end
 
   for i, enemy in ipairs(enemies) do
-    if key == 'K' and distanceBetween(player.x, player.y, enemy.x, enemy.y) > 100 then
-      enemy.dead = true
+    if key == "k" then
+      player.isAttacking = true
     end
   end
 end
